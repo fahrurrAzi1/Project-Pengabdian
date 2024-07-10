@@ -15,15 +15,15 @@
                     @if (Auth::check())
                         @if (Auth::user()->role == 'admin')
                             <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                                {{ __('Admin Dashboard') }}
+                                {{ __('Dashboard Admin') }}
                             </x-nav-link>
                         @elseif (Auth::user()->role == 'guru')
                             <x-nav-link :href="route('guru.dashboard')" :active="request()->routeIs('guru.dashboard')">
-                                {{ __('Guru Dashboard') }}
+                                {{ __('Dashboard Guru') }}
                             </x-nav-link>
                         @elseif (Auth::user()->role == 'siswa')
                             <x-nav-link :href="route('siswa.dashboard')" :active="request()->routeIs('siswa.dashboard')">
-                                {{ __('Siswa Dashboard') }}
+                                {{ __('Dashboard Siswa') }}
                             </x-nav-link>
                         @endif
                     @endif
