@@ -20,21 +20,20 @@
                                 <div class="card-body">
                                     <p><strong>Nama:</strong> {{ Auth::user()->name }}</p>
                                     <p><strong>Email:</strong> {{ Auth::user()->email }}</p>
-                                    <!-- Tambahkan informasi profil lainnya di sini -->
                                 </div>
                             </div>
                         </div>
-                        <!-- Buat Soal -->
                         <div class="col-md-8 mb-8">
                             <div class="card">
                                 <div class="card-header">{{ __('Buat Soal') }}</div>
                                 <div class="card-body">
-                                    <form id="form-soal">
+                                    <form id="form-soal" action="{{ route('questions.store') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
                                         <div id="soal-container">
-                                            <div class="form-group d-flex align-items-center">
+                                            <div class="form-group d-flex align-items-center" id="question-1">
                                                 <label for="pertanyaan_1" class="sr-only">Pertanyaan 1:</label>
-                                                <input type="text" class="form-control me-2" id="pertanyaan_1" name="pertanyaan[]" placeholder="Pertanyaan 1">
-                                                <button type="button" class="btn btn-danger" onclick="removeQuestion(this)">Hapus</button>
+                                                <textarea class="form-control me-2" id="pertanyaan_1" name="pertanyaan[]" placeholder="Pertanyaan 1" required></textarea>
+                                                <button type="button" class="btn btn-danger ml-2" onclick="removeQuestion(this)">Hapus</button>
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-primary" onclick="addQuestion()">Tambah Pertanyaan</button>
@@ -49,39 +48,37 @@
         </div>
     </div>
  
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.3.1/classic/ckeditor.js"></script>
+
     <script>
-        let questionCount = 1;
-    
         function addQuestion() {
-            questionCount++;
-            const questionHTML = `
-                <div class="form-group d-flex align-items-center mt-2">
-                    <label for="pertanyaan_${questionCount}" class="sr-only">Pertanyaan ${questionCount}:</label>
-                    <input type="text" class="form-control me-2" id="pertanyaan_${questionCount}" name="pertanyaan[]" placeholder="Pertanyaan ${questionCount}">
-                    <button type="button" class="btn btn-danger" onclick="removeQuestion(this)">Hapus</button>
-                </div>
+            let soalContainer = document.getElementById('soal-container');
+            let questionCount = soalContainer.querySelectorAll('.form-group').length;
+            let newQuestion = document.createElement('div');
+            newQuestion.classList.add('form-group', 'd-flex', 'align-items-center');
+            newQuestion.innerHTML = `
+                <label for="pertanyaan_${questionCount + 1}" class="sr-only">Pertanyaan ${questionCount + 1}:</label>
+                <textarea class="form-control me-2" id="pertanyaan_${questionCount + 1}" name="pertanyaan[]" placeholder="Pertanyaan ${questionCount + 1}" required></textarea>
+                <button type="button" class="btn btn-danger ml-2" onclick="removeQuestion(this)">Hapus</button>
             `;
-            document.getElementById('soal-container').insertAdjacentHTML('beforeend', questionHTML);
-            updateQuestionLabels();
+            soalContainer.appendChild(newQuestion);
+
+            ClassicEditor
+                .create( document.getElementById(`pertanyaan_${questionCount + 1}`) )
+                .catch( error => {
+                    console.error( error );
+                } );
         }
-    
+
         function removeQuestion(button) {
-            button.closest('.form-group').remove();
-            updateQuestionLabels();
+            button.parentNode.remove();
         }
-    
-        function updateQuestionLabels() {
-            const questions = document.querySelectorAll('#soal-container .form-group');
-            questionCount = questions.length;
-            questions.forEach((question, index) => {
-                const label = question.querySelector('label');
-                const input = question.querySelector('input');
-                label.setAttribute('for', `pertanyaan_${index + 1}`);
-                label.textContent = `Pertanyaan ${index + 1}:`;
-                input.setAttribute('id', `pertanyaan_${index + 1}`);
-                input.setAttribute('placeholder', `Pertanyaan ${index + 1}`);
-            });
-        }
+
+        ClassicEditor
+            .create( document.querySelector( '#pertanyaan_1' ) )
+            .catch( error => {
+                console.error( error );
+            } );
     </script>
 
 </x-app-layout>
