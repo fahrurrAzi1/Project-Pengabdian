@@ -6,7 +6,7 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,6 +36,6 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
 });
 
-Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store'); 
+Route::post('/guru/store', [QuestController::class, 'store'])->name('guru.store');
 
 require __DIR__.'/auth.php';

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Content;
 use Illuminate\Http\Request;
 
 class GuruController extends Controller
 {
     public function index()
     {
-        return view('guru.dashboard');
+        $contents = Content::all();
+
+        return view('guru.dashboard', compact('contents'));
     }
 }

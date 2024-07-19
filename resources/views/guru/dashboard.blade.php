@@ -14,7 +14,7 @@
                 <div class="container mt-3">
                     <div class="row">
                         <!-- Profil Guru -->
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-2">
                             <div class="card">
                                 <div class="card-header">{{ __('Profil Guru') }}</div>
                                 <div class="card-body">
@@ -23,22 +23,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-8 mb-8">
+                        <div class="col-md-8">
+                            <form action="{{ route('guru.store') }}" method="post">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="content">Content</label>
+                                    <textarea name="content" id="content" class="form-control"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                        <div class="col-md-8 mt-2 mb-3 ml-12">
                             <div class="card">
-                                <div class="card-header">{{ __('Buat Soal') }}</div>
+                                <div class="card-header">
+                                    <h2>Konten Tersimpan</h2>
+                                </div>
                                 <div class="card-body">
-                                    <form id="form-soal" action="{{ route('questions.store') }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <div id="soal-container">
-                                            <div class="form-group d-flex align-items-center" id="question-1">
-                                                <label for="pertanyaan_1" class="sr-only">Pertanyaan 1:</label>
-                                                <textarea class="form-control me-2" id="pertanyaan_1" name="pertanyaan[]" placeholder="Pertanyaan 1" required></textarea>
-                                                <button type="button" class="btn btn-danger ml-2" onclick="removeQuestion(this)">Hapus</button>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-primary" onclick="addQuestion()">Tambah Pertanyaan</button>
-                                        <button type="submit" class="btn btn-success">Simpan Soal</button>
-                                    </form>
+                                    @foreach($contents as $content)
+                                    <div class="content">
+                                        {!! $content->body !!}
+                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -47,38 +52,13 @@
             </div>
         </div>
     </div>
- 
-    <script src="https://cdn.ckeditor.com/ckeditor5/35.3.1/classic/ckeditor.js"></script>
 
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
-        function addQuestion() {
-            let soalContainer = document.getElementById('soal-container');
-            let questionCount = soalContainer.querySelectorAll('.form-group').length;
-            let newQuestion = document.createElement('div');
-            newQuestion.classList.add('form-group', 'd-flex', 'align-items-center');
-            newQuestion.innerHTML = `
-                <label for="pertanyaan_${questionCount + 1}" class="sr-only">Pertanyaan ${questionCount + 1}:</label>
-                <textarea class="form-control me-2" id="pertanyaan_${questionCount + 1}" name="pertanyaan[]" placeholder="Pertanyaan ${questionCount + 1}" required></textarea>
-                <button type="button" class="btn btn-danger ml-2" onclick="removeQuestion(this)">Hapus</button>
-            `;
-            soalContainer.appendChild(newQuestion);
-
-            ClassicEditor
-                .create( document.getElementById(`pertanyaan_${questionCount + 1}`) )
-                .catch( error => {
-                    console.error( error );
-                } );
-        }
-
-        function removeQuestion(button) {
-            button.parentNode.remove();
-        }
-
         ClassicEditor
-            .create( document.querySelector( '#pertanyaan_1' ) )
-            .catch( error => {
-                console.error( error );
-            } );
+            .create(document.querySelector('#content'))
+            .catch(error => {
+                console.error(error);
+            });
     </script>
-
 </x-app-layout>
