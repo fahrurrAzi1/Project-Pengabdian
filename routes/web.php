@@ -30,12 +30,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru', [GuruController::class, 'index'])->name('guru.dashboard');
+    Route::post('/guru/store', [QuestController::class, 'store'])->name('guru.store');
+    Route::put('/guru/{id}', [GuruController::class, 'update'])->name('guru.update');
+    Route::delete('/guru/{id}', [GuruController::class, 'destroy'])->name('guru.destroy');
 });
 
 Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
 });
-
-Route::post('/guru/store', [QuestController::class, 'store'])->name('guru.store');
 
 require __DIR__.'/auth.php';

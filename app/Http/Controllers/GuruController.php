@@ -13,4 +13,25 @@ class GuruController extends Controller
 
         return view('guru.dashboard', compact('contents'));
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+        
+        $content = Content::findOrFail($id);
+        $content->body = $request->input('content');
+        $content->save();
+
+        return redirect()->back()->with('success', 'Content updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $content = Content::findOrFail($id);
+        $content->delete();
+
+        return redirect()->back()->with('success', 'Content deleted successfully.');
+    }
 }
