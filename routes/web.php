@@ -9,6 +9,21 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestController;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        $role = auth()->user()->role;
+
+        switch ($role) {
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            case 'guru':
+                return redirect()->route('guru.dashboard');
+            case 'siswa':
+                return redirect()->route('siswa.dashboard');
+            default:
+                return redirect('/');
+        }
+    }
+
     return view('welcome');
 });
 
@@ -24,19 +39,21 @@ Route::middleware('auth')->group(function () {
 
 Route::aliasMiddleware('role', RoleMiddleware::class);
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-});
-
-Route::middleware(['auth', 'role:guru'])->group(function () {
-    Route::get('/guru', [GuruController::class, 'index'])->name('guru.dashboard');
-    Route::post('/guru/store', [QuestController::class, 'store'])->name('guru.store');
-    Route::put('/guru/{id}', [GuruController::class, 'update'])->name('guru.update');
-    Route::delete('/guru/{id}', [GuruController::class, 'destroy'])->name('guru.destroy');
-});
-
-Route::middleware(['auth', 'role:siswa'])->group(function () {
-    Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
+Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+        Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+    });
+    
+    Route::middleware(['auth', 'role:guru'])->group(function () {
+        Route::get('/guru', [GuruController::class, 'index'])->name('guru.dashboard');
+        Route::post('/guru/store', [QuestController::class, 'store'])->name('guru.store');
+        Route::put('/guru/{id}', [GuruController::class, 'update'])->name('guru.update');
+        Route::delete('/guru/{id}', [GuruController::class, 'destroy'])->name('guru.destroy');
+    });
+    
+    Route::middleware(['auth', 'role:siswa'])->group(function () {
+        Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
+    });
 });
 
 require __DIR__.'/auth.php';
