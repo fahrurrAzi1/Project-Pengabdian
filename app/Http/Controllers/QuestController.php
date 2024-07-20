@@ -20,7 +20,7 @@ class QuestController extends Controller
         $quest->body = $request->input('content');
         $quest->save();
 
-         // Redirect ke halaman yang sama
-         return redirect()->route('guru.dashboard')->with('success', 'Konten berhasil disimpan!');
+        // Redirect ke halaman yang sama
+        return redirect()->route('guru.dashboard')->with('success', 'Konten berhasil disimpan!');
     }
 }
