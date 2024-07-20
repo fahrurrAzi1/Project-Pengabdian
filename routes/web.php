@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestController;
 
 Route::get('/', function () {
+    // fungsi auto login jika lupa log-out
     if (auth()->check()) {
         $role = auth()->user()->role;
 
@@ -23,6 +24,7 @@ Route::get('/', function () {
                 return redirect('/');
         }
     }
+    // selesai
 
     return view('welcome');
 });
