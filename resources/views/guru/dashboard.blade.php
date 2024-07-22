@@ -39,9 +39,10 @@
                                     <h2>Bank Soal</h2>
                                 </div>
                                 <div class="card-body">
-                                    @foreach($contents as $content)
+                                    @foreach($contents as $index => $content)
                                     <div class="content">
-                                        {!! $content->body !!}
+                                        <p><strong>Soal {{ $index + 1 }}:</strong></p>
+                                        <div>{!! $content->body !!}</div>
                                         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" data-content-id="{{ $content->id }}" data-content-body="{{ $content->body }}">Edit</button>
                                         <form action="{{ route('guru.destroy', $content->id) }}" method="POST" style="display: inline;">
                                             @csrf
@@ -106,13 +107,93 @@
             var modal = $(this);
             modal.find('.modal-body #edit-content').val(contentBody);
             modal.find('.modal-body #edit-form').attr('action', '/guru/' + contentId);
+
+            // kode untuk edit content
+            ClassicEditor
+                .create(document.querySelector('#edit-content')).then(editor => {
+                    editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
+                        return new MyUploadAdapter(loader);
+                    };
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         });
 
         // kode pemanggil CKEDITOR
         ClassicEditor
             .create(document.querySelector('#content'))
+            .then(editor => {
+                editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
+                    return new MyUploadAdapter(loader);
+                };
+            })
             .catch(error => {
                 console.error(error);
             });
+
+        class MyUploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+                this.url = '{{ route('ckeditor.upload') }}';
+            }
+
+            upload() {
+                return this.loader.file.then(file => new Promise((resolve, reject) => {
+                    this._initRequest();
+                    this._initListeners(resolve, reject, file);
+                    this._sendRequest(file);
+                }));
+            }
+
+            abort() {
+                if (this.xhr) {
+                    this.xhr.abort();
+                }
+            }
+
+            _initRequest() {
+                const xhr = this.xhr = new XMLHttpRequest();
+                xhr.open('POST', this.url, true);
+                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                xhr.responseType = 'json';
+            }
+
+            _initListeners(resolve, reject, file) {
+                const xhr = this.xhr;
+                const loader = this.loader;
+                const genericErrorText = `File tidak bisa di upload: ${file.name}.`;
+
+                xhr.addEventListener('error', () => reject(genericErrorText));
+                xhr.addEventListener('abort', () => reject());
+                xhr.addEventListener('load', () => {
+                    const response = xhr.response;
+
+                    if (!response || response.error) {
+                        return reject(response && response.error ? response.error.message : genericErrorText);
+                    }
+
+                    resolve({
+                        default: response.url
+                    });
+                });
+
+                if (xhr.upload) {
+                    xhr.upload.addEventListener('progress', evt => {
+                        if (evt.lengthComputable) {
+                            loader.uploadTotal = evt.total;
+                            loader.uploaded = evt.loaded;
+                        }
+                    });
+                }
+            }
+
+            _sendRequest(file) {
+                const data = new FormData();
+                data.append('upload', file);
+
+                this.xhr.send(data);
+            }
+    }
     </script>
 </x-app-layout>

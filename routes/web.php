@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::middleware(['auth', 'role:guru'])->group(function () {
         Route::get('/guru', [GuruController::class, 'index'])->name('guru.dashboard');
-        Route::post('/guru/store', [QuestController::class, 'store'])->name('guru.store');
+        Route::post('/guru/store', [GuruController::class, 'store'])->name('guru.store');
         Route::put('/guru/{id}', [GuruController::class, 'update'])->name('guru.update');
         Route::delete('/guru/{id}', [GuruController::class, 'destroy'])->name('guru.destroy');
     });
@@ -57,5 +57,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
     });
 });
+
+Route::post('/ckeditor/upload', [App\Http\Controllers\CKEditorController::class, 'upload'])->name('ckeditor.upload');
 
 require __DIR__.'/auth.php';
