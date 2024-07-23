@@ -8,10 +8,46 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                {{-- <div class="p-6 text-gray-900">
                     {{ __("You're logged in as Siswa!") }}
+                </div> --}}
+
+                <div class="container mt-3">
+                    <div class="row">
+                        <!-- List Pertanyaan -->
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2>Soal {{ $currentQuestionIndex + 1 }}:</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="content mb-4">
+                                        <div>{!! $currentQuestion->body !!}</div>
+                                        <form action="{{ route('siswa.submit_jawaban', $currentQuestion->id) }}" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="jawaban-{{ $currentQuestion->id }}">Jawab: </label>
+                                                <textarea name="jawaban" id="jawaban-{{ $currentQuestion->id }}" class="form-control" rows="2"></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Submit Jawaban</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+
+{{-- script ckeditor 5
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+<script>
+    insialisasi ckeditor di text area
+    document.querySelectorAll('textarea').forEach(textarea => {
+        ClassicEditor.create(textarea).catch(error => console.error(error));
+    });
+</script> --}}

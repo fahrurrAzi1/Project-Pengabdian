@@ -84,17 +84,17 @@
         </div>
     </div>
 
-    <!-- CKEDITOR 5 -->
+    <!-- Skrip CKEDITOR -->
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     
-    <!-- Jquery -->
+    <!--Skrip Jquery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         
-    <!-- Popper JS -->
+    <!--Skrip Popper JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 
     
-    <!-- Bootstrap JS -->
+    <!--Skrip Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>

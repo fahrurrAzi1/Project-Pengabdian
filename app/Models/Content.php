@@ -13,4 +13,9 @@ class Content extends Model
         'body',
         'image_path',
     ];
+
+    public function jawabans()
+    {
+        return $this->hasMany(Jawaban::class);
+    }
 }
