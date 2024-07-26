@@ -54,11 +54,35 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-6  mb-3 ml-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2>Jawaban Siswa</h2>
+                                </div>
+                                <div class="card-body">
+                                    @foreach($contents->pluck('jawabans')->flatten()->groupBy('user.id') 
+                                    as $userId => $userJawabans)
+                                    @php
+                                        $firstJawaban = $userJawabans->first();
+                                        $studentName = $firstJawaban && $firstJawaban->user ? $firstJawaban->user->name : '-';
+                                    @endphp
+                                        <button type="button" class="btn btn-info btn-sm mb-2" data-toggle="modal" 
+                                        data-target="#answerModal" data-student-name="{{ $studentName }}" 
+                                        data-answers='@json($userJawabans)'>
+                                            Nama Siswa: {{ $studentName }}
+                                        </button>
+                                        <hr>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- modal edit konten -->
 
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -84,11 +108,32 @@
         </div>
     </div>
 
+    <!-- modal jawaban -->
+    <div class="modal fade" id="answerModal" tabindex="-1" aria-labelledby="answerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="answerModalLabel">Jawaban Siswa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Nama Siswa:</strong> <span id="modal-student-name"></span></p>
+                    <p><strong>Jawaban:</strong></p>
+                    <div id="modal-answers"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skrip jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
     <!-- Skrip CKEDITOR -->
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     
     <!--Skrip Jquery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         
     <!--Skrip Popper JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
@@ -131,6 +176,87 @@
             .catch(error => {
                 console.error(error);
             });
+
+        // fungsi memanggil jawaban siswa
+        $('#answerModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var studentName = button.data('student-name');
+            var answers = button.data('answers');
+
+            var modal = $(this);
+            modal.find('#modal-student-name').text(studentName);
+            var answersContainer = modal.find('#modal-answers');
+            answersContainer.empty();
+
+            answers.forEach((answer, index) => {
+                var statusClass = '';
+                var disabledAttr = '';
+                if (answer.status === 'Benar' || answer.status === 'Salah') {
+                    statusClass = 'btn-secondary';
+                    disabledAttr = 'disabled';
+                }
+
+                var answerHtml = `
+                    <div class="mb-2">
+                        <p><strong>Soal ${answer.content_id}:</strong></p>
+                        <p>${answer.answer}</p>
+                        <button class="btn btn-success btn-sm mark-answer ${statusClass}" data-answer-id="${answer.id}" data-status="Benar" ${disabledAttr}>Benar</button>
+                        <button class="btn btn-danger btn-sm mark-answer ${statusClass}" data-answer-id="${answer.id}" data-status="Salah" ${disabledAttr}>Salah</button>
+                    </div>
+                `;
+                answersContainer.append(answerHtml);
+            });
+        });
+
+        // menandai jawaban melalui API
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('mark-answer')) {
+                var button = event.target;
+                var answerId = button.dataset.answerId;
+                var status = button.dataset.status;
+
+                console.log('Sending request to mark answer:', { answerId, status });
+
+            fetch(`/guru/mark-answer/${answerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                    body: JSON.stringify({ status: status })
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.text();
+                })
+                .then(text => {
+                    console.log('Raw response text:', text);
+                    try {
+                        return JSON.parse(text);
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        throw new Error('Failed to parse JSON');
+                    }
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.success) {
+                        button.closest('.mb-2').querySelectorAll('.mark-answer').forEach(btn => {
+                            btn.classList.remove('btn-success', 'btn-danger');
+                            btn.classList.add('btn-secondary');
+                            btn.disabled = true;
+                        });
+                        alert(`Jawaban ${status}`);
+                    } else {
+                        alert('Failed to update answer status');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error: ' + error.message);
+                });
+            }
+        });
 
         class MyUploadAdapter {
             constructor(loader) {

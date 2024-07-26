@@ -51,11 +51,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/guru/store', [GuruController::class, 'store'])->name('guru.store');
         Route::put('/guru/{id}', [GuruController::class, 'update'])->name('guru.update');
         Route::delete('/guru/{id}', [GuruController::class, 'destroy'])->name('guru.destroy');
+        Route::post('/guru/mark-answer/{id}', [GuruController::class, 'markAnswer']);
     });
     
     Route::middleware(['auth', 'role:siswa'])->group(function () {
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
         Route::post('/siswa/jawaban/{content}',[SiswaController::class, 'submitJawaban'])->name('siswa.submit_jawaban');
+        Route::get('/dashboard-selesai', [SiswaController::class, 'selesai'])->name('siswa.dashboard_selesai');
     });
 });
 

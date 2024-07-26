@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
+use App\Models\Jawaban;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,7 +11,9 @@ class GuruController extends Controller
 {
     public function index()
     {
-        $contents = Content::all();
+        // $contents = Content::all();
+
+        $contents = Content::with('jawabans.user')->get();
 
         return view('guru.dashboard', compact('contents'));
     }
@@ -51,5 +54,22 @@ class GuruController extends Controller
         $content->delete();
 
         return redirect()->back()->with('Sukses', 'Konten berhasil di hapus.');
+    }
+
+    public function markAnswer(Request $request, $id)
+    {
+        $status = $request->input('status');
+
+        $jawaban = Jawaban::find($id);
+        if (!$jawaban) {
+            return response()->json(['success' => false, 'message' => 'Jawaban not found'], 404);
+        }
+
+        $jawaban->status = $status;
+        if ($jawaban->save()) {
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Failed to update status']);
+        }
     }
 }
