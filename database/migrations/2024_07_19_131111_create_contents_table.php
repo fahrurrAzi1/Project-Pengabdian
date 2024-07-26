@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
             $table->text('body');
+            $table->unsignedBigInteger('teacher_id');
             $table->string('image_path')->nullable();
             $table->timestamps();
+
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

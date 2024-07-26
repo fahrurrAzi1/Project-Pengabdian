@@ -56,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::middleware(['auth', 'role:siswa'])->group(function () {
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
+        Route::post('/siswa/show-questions', [SiswaController::class, 'showQuestions'])->name('siswa.show_questions');
         Route::post('/siswa/jawaban/{content}',[SiswaController::class, 'submitJawaban'])->name('siswa.submit_jawaban');
         Route::get('/dashboard-selesai', [SiswaController::class, 'selesai'])->name('siswa.dashboard_selesai');
     });

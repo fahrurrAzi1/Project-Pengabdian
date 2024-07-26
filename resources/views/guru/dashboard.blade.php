@@ -30,6 +30,7 @@
                                     <label for="content">Input Soal</label>
                                     <textarea name="content" id="content" class="form-control"></textarea>
                                 </div>
+                                <input type="hidden" name="teacher_id" value="{{ $teacherId }}"> 
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </form>
                         </div>
@@ -101,6 +102,7 @@
                             <label for="edit-content">Content</label>
                             <textarea name="content" id="edit-content" class="form-control"></textarea>
                         </div>
+                        <input type="hidden" name="teacher_id" value="{{ $teacherId }}"> 
                         <button type="submit" class="btn btn-success">Simpan Perubahan</button>
                     </form>
                 </div>
@@ -152,6 +154,7 @@
             var modal = $(this);
             modal.find('.modal-body #edit-content').val(contentBody);
             modal.find('.modal-body #edit-form').attr('action', '/guru/' + contentId);
+            modal.find('.modal-body input[name="teacher_id"]').val("{{ $teacherId }}");
 
             // kode untuk edit content
             ClassicEditor

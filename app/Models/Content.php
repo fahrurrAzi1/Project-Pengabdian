@@ -12,10 +12,16 @@ class Content extends Model
     protected $fillable = [
         'body',
         'image_path',
+        'teacher_id'
     ];
 
     public function jawabans()
     {
         return $this->hasMany(Jawaban::class);
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Content;
 use App\Models\Jawaban;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class GuruController extends Controller
@@ -14,18 +15,21 @@ class GuruController extends Controller
         // $contents = Content::all();
 
         $contents = Content::with('jawabans.user')->get();
+        $teacherId = Auth::user()->id;
 
-        return view('guru.dashboard', compact('contents'));
+        return view('guru.dashboard', compact('contents', 'teacherId'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'content' => 'required',
+            'teacher_id' => 'required|exists:users,id'
         ]);
 
         $content = new Content();
         $content->body = $request->input('content');
+        $content->teacher_id = $request->input('teacher_id');
         $content->save();
 
         // Redirect ke halaman yang sama
@@ -36,10 +40,12 @@ class GuruController extends Controller
     {
         $request->validate([
             'content' => 'required',
+            'teacher_id' => 'required|exists:users,id'
         ]);
         
         $content = Content::findOrFail($id);
         $content->body = $request->input('content');
+        $content->teacher_id = $request->input('teacher_id');
         $content->save();
 
         return redirect()->back()->with('Sukses', 'Konten berhasil di update.');
@@ -62,14 +68,14 @@ class GuruController extends Controller
 
         $jawaban = Jawaban::find($id);
         if (!$jawaban) {
-            return response()->json(['success' => false, 'message' => 'Jawaban not found'], 404);
+            return response()->json(['success' => false, 'message' => 'Jawaban tidak ditemukan'], 404);
         }
 
         $jawaban->status = $status;
         if ($jawaban->save()) {
             return response()->json(['success' => true]);
         } else {
-            return response()->json(['success' => false, 'message' => 'Failed to update status']);
+            return response()->json(['success' => false, 'message' => 'Gagal Update Jawaban']);
         }
     }
 }
