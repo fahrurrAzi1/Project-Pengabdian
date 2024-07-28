@@ -17,6 +17,9 @@
         <!-- CKEDITOR -->
         <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js">
 
+        <!-- Link Sweet Alert -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
