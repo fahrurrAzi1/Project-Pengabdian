@@ -48,7 +48,7 @@
                                         <form action="{{ route('guru.destroy', $content->id) }}" method="POST" style="display: inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
                                         </form>
                                     </div>
                                     @endforeach
@@ -324,5 +324,32 @@
                 this.xhr.send(data);
             }
     }
+
+    // sweet alert untuk tombol hapus
+    document.querySelectorAll('.delete-btn').forEach(button=>{
+        button.addEventListener('click', function(event){
+            event.preventDefault();
+            var form=this.closest('form');
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "data soal yang dihapus tidak bisa dikembalikan",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Silahkan hapus !',
+                cancelButtonText: 'Batal'
+            }).then((result)=>{
+
+                if (result.isConfirmed) {
+
+                        form.submit();
+                    
+                    }
+
+            })
+        })
+    })
+
     </script>
 </x-app-layout>
