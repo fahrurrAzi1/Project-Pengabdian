@@ -14,8 +14,11 @@ class GuruController extends Controller
     {
         // $contents = Content::all();
 
-        $contents = Content::with('jawabans.user')->get();
+        // $contents = Content::with('jawabans.user')->get();
+
         $teacherId = Auth::user()->id;
+
+        $contents = Content::where('teacher_id', $teacherId)->get();
 
         return view('guru.dashboard', compact('contents', 'teacherId'));
     }
